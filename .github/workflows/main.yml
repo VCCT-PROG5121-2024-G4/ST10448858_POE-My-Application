@@ -1,0 +1,147 @@
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+public class Part_2Test {
+    private Part_2 kanbanApp;
+
+    @Before
+    public void setUp() {
+        kanbanApp = new Part_2();
+        kanbanApp.initializeTestData();
+    }
+
+    @Test
+    public void testDeveloperArrayPopulatedCorrectly() {
+        Task[] tasks = kanbanApp.getTasks();
+        assertNotNull(tasks);
+
+        assertEquals("Mike Smith", tasks[0].getFirstName() + " " + tasks[0].getLastName());
+        assertEquals("Edward Harrison", tasks[1].getFirstName() + " " + tasks[1].getLastName());
+        assertEquals("Samantha Paulson", tasks[2].getFirstName() + " " + tasks[2].getLastName());
+        assertEquals("Glenda Oberholzer", tasks[3].getFirstName() + " " + tasks[3].getLastName());
+    }
+
+    @Test
+    public void testDisplayDeveloperAndDurationForLongestTask() {
+        Task[] tasks = kanbanApp.getTasks();
+        Task longestTask = tasks[0];
+
+        for (Task task : tasks) {
+            if (task != null && task.getDuration() > longestTask.getDuration()) {
+                longestTask = task;
+            }
+        }
+
+        assertEquals("Glenda Oberholzer", longestTask.getFirstName() + " " + longestTask.getLastName());
+        assertEquals(11, longestTask.getDuration(), 0.0);
+    }
+
+    @Test
+    public void testSearchForTasks() {
+        Task foundTask = null;
+        String taskName = "Create Login";
+        
+        for (Task task : kanbanApp.getTasks()) {
+            if (task != null && task.getTaskName().equalsIgnoreCase(taskName)) {
+                foundTask = task;
+                break;
+            }
+        }
+
+        assertNotNull(foundTask);
+        assertEquals("Mike Smith", foundTask.getFirstName() + " " + foundTask.getLastName());
+        assertEquals(taskName, foundTask.getTaskName());
+    }
+
+    @Test
+    public void testSearchTasksAssignedToDeveloper() {
+        Task foundTask = null;
+        String developerName = "Samantha Paulson";
+
+        for (Task task : kanbanApp.getTasks()) {
+            if (task != null && (task.getFirstName() + " " + task.getLastName()).equalsIgnoreCase(developerName)) {
+                foundTask = task;
+                break;
+            }
+        }
+
+        assertNotNull(foundTask);
+        assertEquals("Create Reports", foundTask.getTaskName());
+    }
+
+    @Test
+    public void testDeleteTaskFromArray() {
+        Task[] tasks = kanbanApp.getTasks();
+        String taskNameToDelete = "Create Reports";
+
+        for (int i = 0; i < tasks.length; i++) {
+            if (tasks[i] != null && tasks[i].getTaskName().equalsIgnoreCase(taskNameToDelete)) {
+                tasks[i] = null;
+                break;
+            }
+        }
+
+        Task foundTask = null;
+        for (Task task : tasks) {
+            if (task != null && task.getTaskName().equalsIgnoreCase(taskNameToDelete)) {
+                foundTask = task;
+                break;
+            }
+        }
+
+        assertNull(foundTask);
+    }
+
+    @Test
+    public void testDisplayFullTaskReport() {
+        Task[] tasks = kanbanApp.getTasks();
+        StringBuilder report = new StringBuilder("\n======= EasyKanban Report =======\n");
+
+        for (Task task : tasks) {
+            if (task != null) {
+                report.append("Task Name: ").append(task.getTaskName()).append("\n")
+                      .append("Task Description: ").append(task.getTaskDescription()).append("\n")
+                      .append("Developer: ").append(task.getFirstName()).append(" ").append(task.getLastName()).append("\n")
+                      .append("Task Duration: ").append(task.getDuration()).append(" hours\n")
+                      .append("Task ID: ").append(task.getTaskId()).append("\n")
+                      .append("Task Status: ").append(task.getStatus()).append("\n")
+                      .append("---\n");
+            }
+        }
+        report.append("===============================");
+
+        String expectedReport = "\n======= EasyKanban Report =======\n" +
+                "Task Name: Create Login\n" +
+                "Task Description: Login feature\n" +
+                "Developer: Mike Smith\n" +
+                "Task Duration: 5.0 hours\n" +
+                "Task ID: CR:1:ITH\n" +
+                "Task Status: To Do\n" +
+                "---\n" +
+                "Task Name: Create Add Features\n" +
+                "Task Description: Add features\n" +
+                "Developer: Edward Harrison\n" +
+                "Task Duration: 8.0 hours\n" +
+                "Task ID: CR:2:SON\n" +
+                "Task Status: Doing\n" +
+                "---\n" +
+                "Task Name: Create Reports\n" +
+                "Task Description: Reports feature\n" +
+                "Developer: Samantha Paulson\n" +
+                "Task Duration: 2.0 hours\n" +
+                "Task ID: CR:3:SON\n" +
+                "Task Status: Done\n" +
+                "---\n" +
+                "Task Name: Add Arrays\n" +
+                "Task Description: Array feature\n" +
+                "Developer: Glenda Oberholzer\n" +
+                "Task Duration: 11.0 hours\n" +
+                "Task ID: AA:4:ZER\n" +
+                "Task Status: To Do\n" +
+                "---\n" +
+                "===============================";
+
+        assertEquals(expectedReport, report.toString());
+    }
+}
